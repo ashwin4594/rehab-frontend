@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import axios from "axios";
+import api from "../api/api";
 
 // ✅ Banner Images
 import noDrugs from "../assets/WhatsApp Image 2025-11-02 at 12.38.06_daab534b.jpg";
@@ -31,7 +31,7 @@ export default function Home() {
   const handleAppointmentSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/patient/book", {
+      await api.post("/api/patient/book", {
         patientName,
         phone,
         date,

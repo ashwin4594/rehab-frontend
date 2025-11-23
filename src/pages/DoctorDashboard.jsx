@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE } from "../api/api";
 import io from "socket.io-client";
 import backgroundImage from "../assets/WhatsApp Image 2025-11-02 at 6.30.46 PM.jpeg";
 
@@ -19,7 +19,7 @@ export default function DoctorDashboard() {
 
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/doctor/appointments");
+        const res = await api.get("/api/doctor/appointments");
         setAppointments(res.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -29,9 +29,7 @@ export default function DoctorDashboard() {
     const fetchLeaves = async () => {
       try {
         if (storedUser?.name) {
-          const res = await axios.get(
-            `http://localhost:5000/api/leave/my-leaves/${storedUser.name}`
-          );
+          const res = await api.get(`/api/leave/my-leaves/${storedUser.name}`);
           setLeaves(res.data);
         }
       } catch (err) {
@@ -43,7 +41,7 @@ export default function DoctorDashboard() {
     fetchLeaves();
 
     // ✅ Socket.IO setup
-    const socket = io("http://localhost:5000");
+    const socket = io(API_BASE);
     if (storedUser?.name) socket.emit("registerDoctor", storedUser.name);
 
     socket.on("leaveUpdate", (data) => {
@@ -64,7 +62,7 @@ export default function DoctorDashboard() {
   const handleLeaveSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/leave/request", {
+      const res = await api.post("/api/leave/request", {
         name: doctor?.name,
         reason,
         fromDate,
@@ -84,7 +82,7 @@ export default function DoctorDashboard() {
   /* ✅ Mark appointment as completed */
   const handleMarkCompleted = async (id, patientName) => {
     try {
-      await axios.put(`http://localhost:5000/api/doctor/appointments/${id}/complete`);
+      await api.put(`/api/doctor/appointments/${id}/complete`);
       setAppointments((prev) =>
         prev.map((appt) =>
           appt._id === id ? { ...appt, status: "completed" } : appt

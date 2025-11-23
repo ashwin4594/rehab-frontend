@@ -1,10 +1,63 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header(){
-  const token = localStorage.getItem('token');
-  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const logout = ()=>{ localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='/' }
+  const [auth, setAuth] = useState({ token: null, user: null });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const readAuth = () => ({
+      token: localStorage.getItem('token'),
+      user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+    });
+
+    setAuth(readAuth());
+
+    // update when other tabs/windows change auth
+    const onStorage = (e) => {
+      if (e.key === 'token' || e.key === 'user') setAuth(readAuth());
+    };
+    const onAuthChange = () => setAuth(readAuth());
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('authChange', onAuthChange);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('authChange', onAuthChange);
+    };
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({ token: null, user: null });
+    // notify UI in same tab
+    window.dispatchEvent(new Event('authChange'));
+    navigate('/');
+  };
+
+  const { token, user } = auth;
+
+  const roleToDashboardPath = (role) => {
+    if (!role) return '/visitor-dashboard';
+    const r = String(role).toLowerCase();
+    switch (r) {
+      case 'admin':
+        return '/admin-dashboard';
+      case 'doctor':
+      case 'therapist':
+        return '/doctor-dashboard';
+      case 'staff':
+        return '/staff-dashboard';
+      case 'patient':
+        return '/patient-dashboard';
+      case 'visitor':
+        return '/visitor-dashboard';
+      case 'user':
+        return '/user-dashboard';
+      default:
+        return '/visitor-dashboard';
+    }
+  };
 
   return (
     <header className="header">
@@ -25,7 +78,7 @@ export default function Header(){
           <Link to="/contact">Contact</Link>
           {token ? (
             <>
-              <Link to="/dashboard" style={{marginLeft:12}}>{user?.role || 'Dashboard'}</Link>
+              <Link to={roleToDashboardPath(user?.role)} style={{marginLeft:12}}>{user?.role || 'Dashboard'}</Link>
               <button onClick={logout} style={{marginLeft:12}} className="btn">Logout</button>
             </>
           ) : (

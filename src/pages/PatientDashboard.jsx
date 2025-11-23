@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api, { API_BASE } from "../api/api";
 import io from "socket.io-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,7 +21,7 @@ export default function PatientDashboard() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/api/doctors");
+        const res = await api.get("/api/auth/api/doctors");
         setDoctors(res.data);
       } catch (err) {
         console.error("Error fetching doctors:", err);
@@ -30,7 +30,7 @@ export default function PatientDashboard() {
 
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/patient/appointments");
+        const res = await api.get("/api/patient/appointments");
         setAppointments(res.data);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -41,7 +41,7 @@ export default function PatientDashboard() {
     fetchAppointments();
 
     // ✅ Real-time socket connection
-    const socket = io("http://localhost:5000");
+    const socket = io(API_BASE);
     if (user?.name) socket.emit("registerPatient", user.name);
 
     socket.on("appointmentStatusUpdated", (data) => {
@@ -80,7 +80,7 @@ export default function PatientDashboard() {
         status: "Scheduled",
       };
 
-      await axios.post("http://localhost:5000/api/patient/book", newAppointment);
+      await api.post("/api/patient/book", newAppointment);
       toast.success("✅ Appointment booked successfully!");
       setAppointments((prev) => [...prev, newAppointment]);
       setFormData({ doctorName: "", phone: "", date: "", reason: "" }); // ✅ Reset includes phone now
@@ -104,6 +104,8 @@ export default function PatientDashboard() {
       case "Logout":
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        // notify other UI in same tab
+        window.dispatchEvent(new Event('authChange'));
         navigate("/login");
         break;
       default:

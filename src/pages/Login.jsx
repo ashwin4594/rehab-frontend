@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -14,12 +14,13 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const res = await api.post(`/api/auth/login`, formData);
       const { user, token } = res.data;
 
       if (!user || !user.role) {
@@ -28,6 +29,9 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", token);
+
+      // notify other UI (same tab) that auth changed
+      window.dispatchEvent(new Event('authChange'));
 
       alert(`✅ Login successful! Welcome ${user.name}`);
 
@@ -169,7 +173,7 @@ export default function Login() {
         </button>
 
         <p style={styles.footer}>
-          Don’t have an account?{" "}
+          Don’t have an account? {" "}
           <a href="/signup" style={styles.link}>
             Sign Up
           </a>

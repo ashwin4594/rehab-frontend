@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api/api';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard(){
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -14,7 +15,7 @@ export default function Dashboard(){
     }
   }, []);
 
-  if(!user) return <div className="container" style={{paddingTop:20}}>Please login <a href="/login" className="btn">Login</a></div>;
+  if(!user) return <div className="container" style={{paddingTop:20}}>Please login <Link to="/login" className="btn">Login</Link></div>;
 
   return (
     <div className="container" style={{paddingTop:20}}>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ export default function Contact() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/contact/send", formData);
+      const res = await api.post("/api/contact/send", formData);
 
       if (res.status === 201) {
         setStatus("✅ Message sent successfully! We'll contact you soon.");

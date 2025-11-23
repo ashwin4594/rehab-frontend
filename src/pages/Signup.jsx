@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api/api";
+import { Link } from 'react-router-dom';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signup", formData);
+      const res = await api.post("/api/auth/signup", formData);
       setMessage(res.data.message);
       setFormData({ name: "", email: "", password: "", role: "patient" });
     } catch (error) {
@@ -170,10 +171,10 @@ export default function Signup() {
         )}
 
         <p style={{ marginTop: "20px", color: "#555", fontSize: "14px" }}>
-          Already have an account?{" "}
-          <a href="/login" style={{ color: "#065f46", fontWeight: "600" }}>
+          Already have an account? {" "}
+          <Link to="/login" style={{ color: "#065f46", fontWeight: "600" }}>
             Login here
-          </a>
+          </Link>
         </p>
       </form>
     </div>

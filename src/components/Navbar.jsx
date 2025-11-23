@@ -1,18 +1,72 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/elite-logo.jpg";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [auth, setAuth] = useState({ token: null, user: null });
+  const navigate = useNavigate();
 
-  const navLinks = [
+  useEffect(() => {
+    const read = () => ({
+      token: localStorage.getItem('token'),
+      user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+    });
+    setAuth(read());
+
+    const onStorage = (e) => {
+      if (e.key === 'token' || e.key === 'user') setAuth(read());
+    };
+    const onAuthChange = () => setAuth(read());
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('authChange', onAuthChange);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('authChange', onAuthChange);
+    };
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({ token: null, user: null });
+    // notify UI in same tab
+    window.dispatchEvent(new Event('authChange'));
+    navigate('/');
+  };
+
+  const navLinksBase = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
-    // { name: "Services", path: "/services" },
     { name: "Contact", path: "/contact" },
-    { name: "Login", path: "/login" },
   ];
+
+  const roleToDashboardPath = (role) => {
+    if (!role) return '/visitor-dashboard';
+    const r = String(role).toLowerCase();
+    switch (r) {
+      case 'admin':
+        return '/admin-dashboard';
+      case 'doctor':
+      case 'therapist':
+        return '/doctor-dashboard';
+      case 'staff':
+        return '/staff-dashboard';
+      case 'patient':
+        return '/patient-dashboard';
+      case 'visitor':
+        return '/visitor-dashboard';
+      case 'user':
+        return '/user-dashboard';
+      default:
+        return '/visitor-dashboard';
+    }
+  };
+
+  const navLinks = auth.token
+    ? [...navLinksBase, { name: auth.user?.role || 'Dashboard', path: roleToDashboardPath(auth.user?.role) }]
+    : [...navLinksBase, { name: 'Login', path: '/login' }];
 
   return (
     <nav
@@ -115,6 +169,12 @@ export default function Navbar() {
             </Link>
           </motion.div>
         ))}
+        {/* If authenticated, show Logout button */}
+        {auth.token && (
+          <button onClick={logout} className="btn" style={{ marginLeft: 12 }}>
+            Logout
+          </button>
+        )}
       </div>
 
       {/* Hamburger Icon (Mobile) */}
@@ -179,6 +239,24 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            {auth.token && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  logout();
+                }}
+                style={{
+                  color: '#fff',
+                  background: 'transparent',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  cursor: 'pointer'
+                }}
+              >
+                Logout
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

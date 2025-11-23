@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 import {
   FaUserMd,
   FaUsers,
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   // ✅ Fetch all users
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/users");
+      const res = await api.get("/api/admin/users");
       // backend might return { users: [...] } or just [...]
       const data = res.data && res.data.users ? res.data.users : res.data;
       setUsers(Array.isArray(data) ? data : []);
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
   // ✅ Fetch all leaves
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/leaves");
+      const res = await api.get("/api/admin/leaves");
       const data = res.data && res.data.leaves ? res.data.leaves : res.data;
       setLeaves(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   // ✅ Fetch messages
   const fetchMessages = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/contact/messages");
+      const res = await api.get("/api/contact/messages");
       const data = res.data && res.data.messages ? res.data.messages : res.data;
       setMessages(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
   // ✅ Fetch pending doctors
   const fetchPendingDoctors = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/pending-doctors");
+      const res = await api.get("/api/admin/pending-doctors");
       // backend may return { doctors: [...] } or [...]
       const data = res.data && res.data.doctors ? res.data.doctors : res.data;
       setPendingDoctors(Array.isArray(data) ? data : []);
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   const handleApproveDoctor = async (id) => {
     if (!window.confirm("Approve this doctor?")) return;
     try {
-      const res = await axios.put(`http://localhost:5000/api/admin/approve-doctor/${id}`);
+      const res = await api.put(`/api/admin/approve-doctor/${id}`);
       // remove approved doctor from UI
       setPendingDoctors((prev) => prev.filter((doc) => doc._id !== id && doc.id !== id));
       alert(res.data?.message || "Doctor approved successfully!");
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Reject this doctor? This will remove their registration.")) return;
     try {
       // Endpoint should remove the pending doctor. Make sure backend implements it.
-      const res = await axios.delete(`http://localhost:5000/api/admin/reject-doctor/${id}`);
+      const res = await api.delete(`/api/admin/reject-doctor/${id}`);
       setPendingDoctors((prev) => prev.filter((doc) => doc._id !== id && doc.id !== id));
       alert(res.data?.message || "Doctor rejected and removed!");
     } catch (error) {
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
   const handleDeleteMessage = async (id) => {
     if (!window.confirm("Are you sure you want to delete this message?")) return;
     try {
-      const res = await axios.delete(`http://localhost:5000/api/contact/messages/${id}`);
+      const res = await api.delete(`/api/contact/messages/${id}`);
       setMessages((prev) => prev.filter((msg) => msg._id !== id && msg.id !== id));
       alert(res.data?.message || "Message deleted successfully!");
     } catch (error) {
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await axios.delete(`http://localhost:5000/api/admin/users/${id}`);
+      const res = await api.delete(`/api/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id && u.id !== id));
       alert(res.data?.message || "User deleted successfully!");
     } catch (error) {
@@ -150,10 +150,10 @@ export default function AdminDashboard() {
     try {
       const endpoint =
         action === "approve"
-          ? `http://localhost:5000/api/admin/leave/approve/${id}`
-          : `http://localhost:5000/api/admin/leave/reject/${id}`;
+          ? `/api/admin/leave/approve/${id}`
+          : `/api/admin/leave/reject/${id}`;
 
-      const res = await axios.put(endpoint);
+      const res = await api.put(endpoint);
       alert(res.data?.message || "Leave updated.");
 
       setLeaves((prev) =>
