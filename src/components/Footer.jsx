@@ -85,11 +85,11 @@ export default function Footer() {
           </p>
 
           <p style={infoLine}>
-            <FaPhoneAlt color="#facc15" /> +91 630441240 / +91 9441789537
+            <FaPhoneAlt color="#facc15" /> +91 6304412402 / +91 9441789537
           </p>
 
           <p style={infoLine}>
-            <FaEnvelope color="#facc15" /> contact@eliterehab.in
+            <FaEnvelope color="#facc15" /> taruntej9300@gmail.com
           </p>
 
           <p style={infoLine}>
