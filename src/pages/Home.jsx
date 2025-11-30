@@ -358,7 +358,7 @@ export default function Home() {
         <h3 style={{ marginBottom: "10px", color: "#facc15" }}>
           Elite Rehab & De-Addiction Center
         </h3>
-        <p>📍 Hyderabad | ☎️ +91-630441240 | ✉️ taruntej9300@gmail.com</p>
+        <p>📍 Hyderabad | ☎️ +91-6304412402 | ✉️ taruntej9300@gmail.com</p>
         <p style={{ marginTop: "10px", color: "#d1fae5", fontSize: "14px" }}>
           {/* © {new Date().getFullYear()}  */}
         </p>
