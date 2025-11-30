@@ -146,7 +146,7 @@ export default function Footer() {
           backgroundColor: "rgba(0,0,0,0.15)",
         }}
       >
-        © {new Date().getFullYear()} Elite Rehabilitation & De-Addiction Center | All Rights Reserved
+        {/* © {new Date().getFullYear()} Elite Rehabilitation & De-Addiction Center | All Rights Reserved */}
       </div>
     </footer>
   );
