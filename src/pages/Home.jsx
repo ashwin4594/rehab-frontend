@@ -270,7 +270,7 @@ export default function Home() {
           Book Your Appointment
         </h2>
         <p style={{ color: "#047857", marginBottom: "40px" }}>
-          📞 Call us directly at <b>+91 630441240</b> or fill the form below.
+          📞 Call us directly at <b>+91 6304412402 </b> or fill the form below.
         </p>
 
         <motion.form
